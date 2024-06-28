@@ -2,7 +2,6 @@
   @tailwind components;
   @tailwind utilities;
 
- 
   @layer base {
     @layer base {
       :root {
@@ -51,7 +50,6 @@
       }
     }
   }
-
 
   @layer base {
     * {

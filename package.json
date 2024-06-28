@@ -9,19 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.4.1",
     "@radix-ui/react-slot": "^1.1.0",
+    "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.397.0",
+    "mongodb": "^6.7.0",
+    "mongoose": "^8.4.4",
     "next": "14.2.4",
+    "next-auth": "^4.24.7",
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^2.3.0",
-    "tailwindcss-animate": "^1.0.7",
-    "@auth/mongodb-adapter": "^2.5.0",
-    "axios": "^1.6.7",
-    "mongodb": "^6.4.0",
-    "mongoose": "^8.2.0"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "eslint": "^8",
