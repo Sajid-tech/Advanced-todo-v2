@@ -10,6 +10,7 @@ const AccountSchema = new Schema({
     token_type: { type: String },
     scope: { type: String },
     id_token: { type: String },
+    email: { type: String }
 })
 
 const Account = models.Account || model("Account", AccountSchema)

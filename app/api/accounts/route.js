@@ -1,15 +1,15 @@
 import mongooseConnect from "@/lib/mongoose";
-import User from "@/models/User";
+import Account from "@/models/Account";
+
 import { getAuthSession } from "@/utils/auth";
 import { NextResponse } from "next/server";
+
 
 
 export async function GET(req) {
     await mongooseConnect()
 
     const session = await getAuthSession()
-
-    console.log("user session", session)
 
     if (!session) {
         return NextResponse({ error: "User session not found " }, { status: 401 })
@@ -18,12 +18,14 @@ export async function GET(req) {
 
     try {
 
-        const users = await User.find()
-        console.log("users:", users)
-        return NextResponse.json(users)
+        const accounts = await Account.find()
+
+        const userIds = accounts.map(account => account.userId)
+        console.log("users:", userIds)
+        return NextResponse.json({ user: userIds.toString() })
 
     } catch (error) {
         console.error("Error fetching tasks:", error);
-        return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to fetch accounts" }, { status: 500 });
     }
 }

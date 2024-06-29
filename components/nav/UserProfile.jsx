@@ -10,9 +10,11 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { signOutAction } from "@/actions/auth-action";
-
 const UserProfile = () => {
   const { data: session } = useSession();
+
+  console.log("user profile session", session);
+
   const imageUrl = session?.user?.image;
   const name = session?.user?.name;
   const email = session?.user?.email;
