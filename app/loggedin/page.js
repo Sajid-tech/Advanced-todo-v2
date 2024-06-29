@@ -1,6 +1,9 @@
 "use client";
 import { signOutAction } from '@/actions/auth-action';
-import UserProfile from '@/components/userProfile/UserProfile';
+import MobileNav from '@/components/nav/MobileNav';
+import Sidebar from '@/components/nav/Sidebar';
+
+
 
 const Page = () => {
 
@@ -9,11 +12,17 @@ const Page = () => {
     }
 
     return (
-        <main className='flex flex-col items-center justify-between p-24'>
-            <h1>Todovex</h1>
-            <UserProfile />
-            <button onClick={handleSignOut}>signout</button>
-        </main>
+        <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+            <Sidebar />
+            <div className="felx flex-col">
+                <MobileNav />
+                <main className="flex flex-1 flex-col gap-4 p-4 lg:px-8">
+                    <h1>Todovex</h1>
+                    <button onClick={handleSignOut}>signout</button>
+                </main>
+
+            </div>
+        </div>
     );
 };
 
