@@ -57,12 +57,10 @@ const TodoFormTest = ({ show, onClose, onFormSubmit }) => {
       onClose(); // Close the drawer
     } catch (error) {
       console.error("Error creating todo:", error);
-      // Handle specific error codes
       if (error.response?.status === 401) {
         // Redirect to login page or handle authentication error
         console.log("Unauthorized access. Redirect to login page.");
       } else {
-        // Handle other errors
         console.error("Unexpected error:", error);
       }
     }
