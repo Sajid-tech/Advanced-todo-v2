@@ -55,3 +55,28 @@ export async function POST(req) {
     }
 }
 
+
+export async function GET(req) {
+    const session = await getAuthSession()
+
+    if (!session) {
+        return NextResponse.json({ error: "User session not found" }, { status: 401 });
+    }
+
+    await mongooseConnect()
+
+    try {
+        const userIds = await getUserId(session?.user?.email);
+
+        if (!userIds) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+
+
+        const todos = await Todo.find({ userId: userIds })
+        return NextResponse.json(todos)
+    } catch (error) {
+        return NextResponse.json({ error: "Failed to fetch todos" }, { status: 500 });
+    }
+}
+
