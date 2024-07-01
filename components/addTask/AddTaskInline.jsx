@@ -1,10 +1,7 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { toast, useToast } from "@/components/ui/use-toast";
-import { CalendarIcon, Text } from "lucide-react";
-
+import { CalendarIcon, Loader, Plus, Tag, Text } from "lucide-react";
 import { format } from "date-fns";
 import moment from "moment";
 import {
@@ -13,224 +10,248 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import axios from "axios";
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "../ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Calendar } from "../ui/calendar";
-import { CardFooter } from "../ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import axios from "axios";
 
-//  Used to create task
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
+
 export default function AddTaskInline({
   setShowAddTask,
   parentTask,
-  projectId: myProjectId,
+  onTodoSubmit,
 }) {
-  const [taskName, setTaskName] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState(new Date());
-  const [priority, setPriority] = useState("1");
-  const [projectId, setProjectId] = useState(
-    myProjectId || parentTask?.projectId || "defaultProjectId"
-  );
-  const [labelId, setLabelId] = useState(
-    parentTask?.labelId || "defaultLabelId"
-  );
-  const [projects, setProjects] = useState([]);
+  const [formData, setFormData] = useState({
+    taskName: "",
+    description: "",
+    dueDate: new Date(),
+    priority: "1",
+    labelId: parentTask?.labelId || "defaultLabelId",
+  });
   const [labels, setLabels] = useState([]);
-  const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await axios.get("/api/projects");
-        setProjects(response.data);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchLabels = async () => {
+  //     try {
+  //       const response = await axios.get("/api/labels");
+  //       setLabels(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching labels:", error);
+  //     }
+  //   };
 
-    //To fetch label
-    const fetchLabels = async () => {
-      try {
-        const response = await axios.get("/api/labels");
-        setLabels(response.data);
-      } catch (error) {
-        console.error("Error fetching labels:", error);
-      }
-    };
+  //   fetchLabels();
+  // }, []);
 
-    fetchProjects();
-    fetchLabels();
+  // Memoized function to fetch labels
+  useMemo(async () => {
+    try {
+      const response = await axios.get("/api/labels");
+      setLabels(response.data);
+    } catch (error) {
+      console.error("Error fetching labels:", error);
+      return []; // Return empty array in case of error
+    }
   }, []);
 
-  async function onSubmit(e) {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleDateChange = (date) => {
+    setFormData({ ...formData, dueDate: date });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (taskName.length < 2) {
-      toast({
-        title: "Task name must be at least 2 characters.",
-        duration: 3000,
-      });
-      return;
-    }
-    if (!projectId) {
-      toast({ title: "Please select a Project.", duration: 3000 });
-      return;
-    }
-    if (!labelId) {
-      toast({ title: "Please select a Label.", duration: 3000 });
-      return;
-    }
-
     const taskData = {
-      taskName,
-      description,
-      priority: parseInt(priority),
-      dueDate: moment(dueDate).valueOf(),
-      projectId,
-      labelId,
+      ...formData,
+      dueDate: moment(formData.dueDate).valueOf(),
     };
-
+    setIsLoading(true);
     try {
-      let response;
-      if (parentTask?._id) {
-        response = await axios.post("/api/subtodo", {
-          ...taskData,
-          parentId: parentTask._id,
-        });
-      } else {
-        response = await axios.post("/api/todos", taskData);
-      }
+      await axios.post("/api/todos", taskData);
 
-      if (response.status === 200) {
-        toast({ title: "🦄 Created a task!", duration: 3000 });
-        setTaskName("");
-        setDescription("");
-        setPriority("1");
-        setDueDate(new Date());
-        setShowAddTask(false);
-      }
+      setFormData({
+        taskName: "",
+        description: "",
+        dueDate: new Date(),
+        priority: "1",
+        labelId: parentTask?.labelId || "defaultLabelId",
+      });
+      await onTodoSubmit();
+      router.push("/loggedin");
+      // Refresh the labels
+      setIsLoading(false);
+
+      setIsOpen(false); // Close the dialog
     } catch (error) {
       console.error("Error creating task:", error);
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div>
-      <form
-        onSubmit={onSubmit}
-        className="space-y-2 border-2 p-2 border-gray-200 my-2 rounded-xl px-3 pt-4 border-foreground/20"
-      >
-        <div className="space-y-2">
-          <Input
-            id="taskName"
-            type="text"
-            placeholder="Enter your Task name"
-            required
-            className="border-0 font-semibold text-lg"
-            value={taskName}
-            onChange={(e) => setTaskName(e.target.value)}
-          />
+    <>
+      <button className="pl-2 flex mt-2 flex-1" onClick={() => setIsOpen(true)}>
+        <div className="flex items-center gap-2 justify-center">
+          <Plus className="h-4 w-4 text-primary hover:bg-primary hover:rounded-xl hover:text-white" />
+          <h3 className="text-base font-light tracking-tight text-foreground/70">
+            Add Task
+          </h3>
         </div>
-        <div className="space-y-2">
-          <div className="flex items-start gap-2">
-            <Text className="ml-auto h-4 w-4 opacity-50" />
-            <Textarea
-              id="description"
-              placeholder="Description"
-              className="resize-none"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <div className="flex flex-col">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "flex gap-2 w-[240px] pl-3 text-left font-normal",
-                    !dueDate && "text-muted-foreground"
-                  )}
-                >
-                  {dueDate ? format(dueDate, "PPP") : <span>Pick a date</span>}
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dueDate}
-                  onSelect={setDueDate}
-                  initialFocus
+      </button>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Task</DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-2 border-2 p-2 border-gray-200 my-2 rounded-xl px-3 pt-4 border-foreground/20"
+          >
+            <div className="space-y-2">
+              <Input
+                id="taskName"
+                name="taskName"
+                type="text"
+                placeholder="Enter your Task name"
+                required
+                className="border-0 font-semibold text-lg"
+                value={formData.taskName}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-start gap-2">
+                <Text className="ml-auto h-4 w-4 opacity-50" />
+                <Textarea
+                  id="description"
+                  name="description"
+                  placeholder="Description"
+                  className="resize-none"
+                  value={formData.description}
+                  onChange={handleChange}
                 />
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div className="flex flex-col">
-            <Select onValueChange={setPriority} defaultValue={priority}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a Priority" />
-              </SelectTrigger>
-              <SelectContent>
-                {[1, 2, 3, 4].map((item, idx) => (
-                  <SelectItem key={idx} value={item.toString()}>
-                    Priority {item}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col">
-            <Select onValueChange={setLabelId} defaultValue={labelId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a Label" />
-              </SelectTrigger>
-              <SelectContent>
-                {labels.map((label, idx) => (
-                  <SelectItem key={idx} value={label._id}>
-                    {label?.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <Select onValueChange={setProjectId} defaultValue={projectId}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a Project" />
-            </SelectTrigger>
-            <SelectContent>
-              {projects.map((project, idx) => (
-                <SelectItem key={idx} value={project._id}>
-                  {project?.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <CardFooter className="flex flex-col lg:flex-row lg:justify-between gap-2 border-t-2 pt-3">
-          <div className="w-full lg:w-1/4"></div>
-          <div className="flex gap-3 self-end">
-            <Button
-              className="bg-gray-300/40 text-gray-950 px-6 hover:bg-gray-300"
-              variant={"outline"}
-              onClick={() => setShowAddTask(false)}
-            >
-              Cancel
-            </Button>
-            <Button className="px-6" type="submit">
-              Add task
-            </Button>
-          </div>
-        </CardFooter>
-      </form>
-    </div>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <div className="flex flex-col">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "flex gap-2 w-[240px] pl-3 text-left font-normal",
+                        !formData.dueDate && "text-muted-foreground"
+                      )}
+                    >
+                      {formData.dueDate ? (
+                        format(formData.dueDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={formData.dueDate}
+                      onSelect={handleDateChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="flex flex-col">
+                <Select
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, priority: value })
+                  }
+                  defaultValue={formData.priority}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4].map((item) => (
+                      <SelectItem key={item} value={item.toString()}>
+                        Priority {item}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col">
+                <Select
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, labelId: value })
+                  }
+                  defaultValue={formData.labelId}
+                >
+                  <SelectTrigger>
+                    <div className="flex items-center gap-2">
+                      <Tag className="h-4 w-4" />
+                      <p>Label</p>
+                      <SelectValue placeholder="Select a Label" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {labels.map((label) => (
+                      <SelectItem key={label._id} value={label._id}>
+                        {label?.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <CardFooter className="flex flex-col lg:flex-row lg:justify-between gap-2 border-t-2 pt-3">
+              <div className="w-full lg:w-1/4"></div>
+              <div className="flex gap-3 self-end">
+                <Button
+                  className="bg-gray-300/40 text-gray-950 px-6 hover:bg-gray-300"
+                  variant={"outline"}
+                  onClick={() => setIsOpen(false)}
+                  type="button"
+                >
+                  Cancel
+                </Button>
+                <Button disabled={isLoading} className="px-6" type="submit">
+                  {isLoading ? (
+                    <div className="flex gap-2">
+                      <Loader className="h-5 w-5 text-primary animate-spin" />
+                    </div>
+                  ) : (
+                    "Add Task"
+                  )}
+                </Button>
+              </div>
+            </CardFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

@@ -1,13 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Checkbox } from "../ui/checkbox";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import Task from "./Task";
-import { CirclePlus } from "lucide-react";
 import CompletedTodos from "./CompletedTodos";
-
-import AddTaskButton, { AddTaskWrapper } from "../addTask/AddTaskButton";
+import AddTaskInline from "../addTask/AddTaskInline";
 
 const TodoList = () => {
   const { data: session } = useSession();
@@ -21,37 +18,53 @@ const TodoList = () => {
       const fetchData = async () => {
         const res = await axios.get("/api/todos");
         setGetTodo(res.data);
+        setTotalTodos(res.data.length);
+
+        const completedTodos = res.data.filter((todo) => todo.isCompleted);
+        const incompleteTodos = res.data.filter((todo) => !todo.isCompleted);
+        setCompleted(completedTodos);
+        setInCompleted(incompleteTodos);
       };
       fetchData();
     }
   }, [session]);
 
-  if (session) {
-    return (
-      <div className="xl:px-40">
-        <div className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold md:text-2xl">Inbox</h1>
-        </div>
-        <div className="flex flex-col gap-1 py-4">
-          {/* Incomplete task */}
+  const refreshTodos = async () => {
+    if (session) {
+      const res = await axios.get("/api/todos");
+      setGetTodo(res.data);
+      setTotalTodos(res.data.length);
 
-          {getTodo.map((item) => (
-            <Task data={item} key={item._id} />
-          ))}
-        </div>
-        {/* Add task button */}
-        <AddTaskWrapper />
-        {/* Pass props */}
-        <div className="flex flex-col gap-1 py-4">
-          {/* Completed task  */}
-          {getTodo.map((item) => (
-            <Task data={item} key={item._id} />
-          ))}
-        </div>
-        <CompletedTodos totalTodos={totalTodos} />
+      const completedTodos = res.data.filter((todo) => todo.isCompleted);
+      const incompleteTodos = res.data.filter((todo) => !todo.isCompleted);
+      setCompleted(completedTodos);
+      setInCompleted(incompleteTodos);
+    }
+  };
+
+  if (!session) return null;
+
+  return (
+    <div className="xl:px-40">
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-semibold md:text-2xl">Inbox</h1>
       </div>
-    );
-  }
+      <div className="flex flex-col gap-1 py-4">
+        {/* Incomplete task */}
+        {inCompleted.map((item) => (
+          <Task data={item} key={item._id} />
+        ))}
+      </div>
+      <AddTaskInline onTodoSubmit={refreshTodos} />
+      <div className="flex flex-col gap-1 py-4">
+        {/* Completed task  */}
+        {completed.map((item) => (
+          <Task data={item} key={item._id} />
+        ))}
+      </div>
+      <CompletedTodos totalTodos={totalTodos} />
+    </div>
+  );
 };
 
 export default TodoList;

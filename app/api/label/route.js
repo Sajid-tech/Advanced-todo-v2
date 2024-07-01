@@ -1,6 +1,8 @@
+//  get and post
+
 import mongooseConnect from "@/lib/mongoose";
 import Account from "@/models/Account";
-import Todo from "@/models/Todo";
+import Label from "@/models/Label";
 import { getAuthSession } from "@/utils/auth";
 import { NextResponse } from "next/server";
 
@@ -16,14 +18,16 @@ async function getUserId(email) {
 }
 
 export async function POST(req) {
-    const session = await getAuthSession();
+
+    const session = await getAuthSession()
+
     if (!session) {
-        return NextResponse.json({ error: "User session not found" }, { status: 401 });
+        return NextResponse.json({ error: "User session is not found" }, { status: 401 })
     }
 
     await mongooseConnect();
 
-    const { taskName, description, priority, dueDate, projectId, labelId, embedding } = await req.json();
+    const { name } = await req.json()
 
     try {
 
@@ -35,24 +39,19 @@ export async function POST(req) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
-        // Create new Todo with userId as ObjectId
-        const newTodo = await Todo.create({
+        const newLabel = await Label.create({
             userId: userIds,
-            taskName,
-            description,
-            priority,
-            dueDate: parseInt(dueDate),
-            projectId: "project",
-            labelId,
-            isCompleted: false,
-            embedding
-        });
+            name,
+            email: session?.user?.email
+        })
 
-        return NextResponse.json({ message: "Todo created", todo: newTodo }, { status: 201 });
+        return NextResponse.json({ newLabel })
+
     } catch (error) {
         console.error("Error creating todo:", error);
         return NextResponse.json({ error: "Failed to create todo" }, { status: 500 });
     }
+
 }
 
 
@@ -73,10 +72,9 @@ export async function GET(req) {
         }
 
 
-        const todos = await Todo.find({ userId: userIds })
+        const todos = await Label.find({ userId: userIds })
         return NextResponse.json(todos)
     } catch (error) {
         return NextResponse.json({ error: "Failed to fetch todos" }, { status: 500 });
     }
 }
-

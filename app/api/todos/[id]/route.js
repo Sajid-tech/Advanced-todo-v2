@@ -21,7 +21,7 @@ export async function PUT(req, { params }) {
         dueDate,
         isCompleted,
         labelId,
-        projectId,
+        projectId: "project",
         embedding
     }, { new: true });
 
