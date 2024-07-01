@@ -5,21 +5,37 @@ import Sidebar from '@/components/nav/Sidebar';
 import axios from 'axios';
 import { Tag } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 const Label = () => {
     const { data: session } = useSession()
     const [getData, setGetData] = useState([])
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     if (session) {
+    //         const fetchData = async () => {
+    //             const res = await axios.get('/api/labels')
+    //             setGetData(res.data)
+    //         }
+    //         fetchData()
+    //     }
+    // }, [session])
+
+    useMemo(async () => {
         if (session) {
-            const fetchData = async () => {
-                const res = await axios.get('/api/labels')
-                setGetData(res.data)
+            try {
+                const response = await axios.get("/api/labels");
+                setGetData(response.data);
+            } catch (error) {
+                console.error("Error fetching labels:", error);
+                return []; // Return empty array in case of error
             }
-            fetchData()
+
+
         }
     }, [session])
+
+
 
     const refreshLabels = async () => {
         if (session) {
@@ -41,11 +57,10 @@ const Label = () => {
                         <div className="flex flex-col gap-1 py-4">
                             {getData?.map((item, id) => (
                                 <div key={id}
-                                    className='flex
-                                 flex-row justify-start items-center gap-2'
+                                    className='flex flex-row justify-start items-center gap-2 py-2 border-b border-gray-200' // Added border and padding
                                 >
-                                    <Tag />
-                                    <p>{item.name}</p>
+                                    <Tag className="text-primary" /> {/* Added text color to Tag */}
+                                    <p className=" text-sm font-normal text-left">{item.name}</p> {/* Adjusted text size */}
                                 </div>
                             ))}
                             <AddLabel onFormSubmit={refreshLabels} />

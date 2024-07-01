@@ -13,9 +13,9 @@ const TodoList = () => {
   const [inCompleted, setInCompleted] = useState([]);
   const [totalTodos, setTotalTodos] = useState(0);
 
-  useEffect(() => {
+  useMemo(async () => {
     if (session) {
-      const fetchData = async () => {
+      try {
         const res = await axios.get("/api/todos");
         setGetTodo(res.data);
         setTotalTodos(res.data.length);
@@ -24,10 +24,18 @@ const TodoList = () => {
         const incompleteTodos = res.data.filter((todo) => !todo.isCompleted);
         setCompleted(completedTodos);
         setInCompleted(incompleteTodos);
-      };
-      fetchData();
+      } catch (error) {
+        console.error("Error fetching labels:", error);
+      }
     }
   }, [session]);
+
+  // useMemo(async () => {
+  //
+  //     const response = await axios.get("/api/labels");
+  //     setLabels(response.data);
+  //
+  // }, []);
 
   const refreshTodos = async () => {
     if (session) {

@@ -4,6 +4,7 @@ import { Calendar, GitBranch } from "lucide-react";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import clsx from "clsx";
 import AddTaskDialog from "./AddTaskDialog";
+import moment from "moment";
 
 const Task = ({ data, isCompleted, handleOnChange, showDetails = false }) => {
   const { taskName, dueDate } = data;

@@ -1,5 +1,6 @@
 import MobileNav from '@/components/nav/MobileNav';
 import Sidebar from '@/components/nav/Sidebar';
+import Upcoming from '@/components/upcoming/Upcoming';
 import React from 'react'
 
 const page = () => {
@@ -9,7 +10,7 @@ const page = () => {
             <div className="felx flex-col">
                 <MobileNav />
                 <main className="flex flex-1 flex-col gap-4 p-4 lg:px-8">
-                    <h3>Upcoming</h3>
+                    <Upcoming />
                 </main>
 
             </div>
