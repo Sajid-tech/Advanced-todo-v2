@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Loader, Plus, Tag, Text } from "lucide-react";
+import { CalendarIcon, Loader, Plus, Tag, TagIcon, Text } from "lucide-react";
 import { format } from "date-fns";
 import moment from "moment";
 import {
@@ -20,22 +20,18 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { CardFooter } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import axios from "axios";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "../ui/drawer";
 
-export default function AddTaskInline({
-  setShowAddTask,
-  parentTask,
-  onTodoSubmit,
-}) {
+export default function AddTaskInline({ parentTask, onTodoSubmit }) {
   const [formData, setFormData] = useState({
     taskName: "",
     description: "",
@@ -120,12 +116,12 @@ export default function AddTaskInline({
           </h3>
         </div>
       </button>
-
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Task</DialogTitle>
-          </DialogHeader>
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Add New Task</DrawerTitle>
+            <DrawerDescription>This action cannot be undone.</DrawerDescription>
+          </DrawerHeader>
           <form
             onSubmit={handleSubmit}
             className="space-y-2 border-2 p-2 border-gray-200 my-2 rounded-xl px-3 pt-4 border-foreground/20"
@@ -155,16 +151,14 @@ export default function AddTaskInline({
                 />
               </div>
             </div>
-            <div className="flex gap-2">
-              <div className="flex flex-col">
+
+            <div className="flex gap-2 justify-between">
+              <div className="flex flex-col w-1/2">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant={"outline"}
-                      className={cn(
-                        "flex gap-2 w-[240px] pl-3 text-left font-normal",
-                        !formData.dueDate && "text-muted-foreground"
-                      )}
+                      className="flex gap-2  pl-3 text-left font-normal"
                     >
                       {formData.dueDate ? (
                         format(formData.dueDate, "PPP")
@@ -184,7 +178,8 @@ export default function AddTaskInline({
                   </PopoverContent>
                 </Popover>
               </div>
-              <div className="flex flex-col">
+
+              <div className="flex flex-col w-1/2">
                 <Select
                   onValueChange={(value) =>
                     setFormData({ ...formData, priority: value })
@@ -203,29 +198,33 @@ export default function AddTaskInline({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex flex-col">
-                <Select
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, labelId: value })
-                  }
-                  defaultValue={formData.labelId}
-                >
-                  <SelectTrigger>
-                    <div className="flex items-center gap-2">
-                      <Tag className="h-4 w-4" />
-                      <p>Label</p>
-                      <SelectValue placeholder="Select a Label" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {labels.map((label) => (
-                      <SelectItem key={label._id} value={label._id}>
-                        {label?.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            </div>
+            <div className=" space-y-2">
+              <Select
+                onValueChange={(value) =>
+                  setFormData({ ...formData, labelId: value })
+                }
+                defaultValue={formData.labelId}
+              >
+                <SelectTrigger>
+                  <div className="flex items-center gap-2">
+                    <TagIcon />
+                    <SelectValue>
+                      {formData.labelId
+                        ? labels.find((label) => label._id === formData.labelId)
+                            ?.name || "Select a Label"
+                        : "Select a Label"}
+                    </SelectValue>
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  {labels.map((label) => (
+                    <SelectItem key={label._id} value={label._id}>
+                      {label?.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <CardFooter className="flex flex-col lg:flex-row lg:justify-between gap-2 border-t-2 pt-3">
               <div className="w-full lg:w-1/4"></div>
@@ -250,8 +249,8 @@ export default function AddTaskInline({
               </div>
             </CardFooter>
           </form>
-        </DialogContent>
-      </Dialog>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }
