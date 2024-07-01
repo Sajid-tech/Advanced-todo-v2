@@ -1,3 +1,4 @@
+"use client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,19 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {
-  Bell,
-  CircleUser,
-  Home,
-  LineChart,
-  Link as LucideLink,
-  Menu,
-  Package,
-  Package2,
-  Search,
-  ShoppingCart,
-  Users,
-} from "lucide-react";
+import { CircleUser, Link as LucideLink, Menu, Search } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -32,8 +21,11 @@ import {
 import { primaryNavItems } from "@/utils";
 import UserProfile from "./UserProfile";
 import Link from "next/link";
+import { signOutAction } from "@/actions/auth-action";
+import { useSession } from "next-auth/react";
 
 const MobileNav = () => {
+  const { data: session } = useSession();
   return (
     <>
       <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
@@ -102,12 +94,19 @@ const MobileNav = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem>
+              <form action={signOutAction}>
+                <Button
+                  type="submit"
+                  variant={"ghost"}
+                  className="hover:text-primary"
+                >
+                  Sign out
+                </Button>
+              </form>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </header>

@@ -6,14 +6,25 @@ import clsx from "clsx";
 import { Loader, StepForward } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useFormStatus } from "react-dom";
+import { useState } from "react";
 
 export default function LoginForm() {
+  // problem both loader invkoed while login - soln' seprate state
+  const [pending, setPending] = useState(false);
 
-  const handleSignIn = (event) => {
+  const handleSignIn = async (event) => {
     event.preventDefault();
-    signInAction()
+    setPending(true);
+    try {
+      await signInAction();
+    } catch (error) {
+      console.error("Sign-in failed:", error);
+    } finally {
+      setPending(false);
+    }
   }
+
+
 
   return (
     <main className="bg-gradient-to-r from-purple-200 to-orange-200 h-full min-h-screen">
@@ -33,7 +44,7 @@ export default function LoginForm() {
           </Link>
           <div className="hidden lg:flex w-fit items-center">
             <form onSubmit={handleSignIn}>
-              <GoogleSignInButton />
+              <GoogleSignInButton pending={pending} />
             </form>
           </div>
         </div>
@@ -74,7 +85,7 @@ export default function LoginForm() {
             </h2>
             <div className="mt-12 flex flex-col gap-4">
               <form onSubmit={handleSignIn}>
-                <GetStartedButton />
+                <GetStartedButton pending={pending} />
               </form>
               <div className="w-fit items-center">
                 <Button
@@ -95,8 +106,8 @@ export default function LoginForm() {
 }
 
 // This component renders a button that initiates a form submission. It uses the useFormStatus hook to check if the form submission is pending. If the submission is pending, it shows a loading spinner and disables the button. Otherwise, it displays "Get Started" and an icon.
-function GetStartedButton() {
-  const { pending } = useFormStatus();
+function GetStartedButton({ pending }) {
+
 
   return (
     <button
@@ -120,8 +131,7 @@ function GetStartedButton() {
   );
 }
 // This component renders a button for signing in with Google. It also uses the useFormStatus hook to check if the form submission is pending. If the submission is pending, it shows a loading spinner and disables the button. Otherwise, it displays "Sign in with Google".
-function GoogleSignInButton() {
-  const { pending } = useFormStatus();
+function GoogleSignInButton({ pending }) {
 
   return (
     <button

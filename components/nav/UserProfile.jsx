@@ -9,7 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { signOutAction } from "@/actions/auth-action";
 const UserProfile = () => {
   const { data: session } = useSession();
 
@@ -37,19 +36,6 @@ const UserProfile = () => {
           <p className="truncate">{email}</p>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuItem className="lg:w-full px-28 flex items-center justify-center">
-          <form action={signOutAction}>
-            <Button
-              type="submit"
-              variant={"ghost"}
-              className="hover:text-primary"
-            >
-              Sign out
-            </Button>
-          </form>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
     </DropdownMenu>
   );
 };
