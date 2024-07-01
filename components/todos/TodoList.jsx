@@ -3,10 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import TodoFormTest from "./TodoFormTest";
 import Task from "./Task";
 import { CirclePlus } from "lucide-react";
 import CompletedTodos from "./CompletedTodos";
+
+import AddTaskButton, { AddTaskWrapper } from "../addTask/AddTaskButton";
 
 const TodoList = () => {
   const { data: session } = useSession();
@@ -14,7 +15,6 @@ const TodoList = () => {
   const [completed, setCompleted] = useState([]);
   const [inCompleted, setInCompleted] = useState([]);
   const [totalTodos, setTotalTodos] = useState(0);
-  const [showTodoForm, setShowTodoForm] = useState(false);
 
   useEffect(() => {
     if (session) {
@@ -25,17 +25,6 @@ const TodoList = () => {
       fetchData();
     }
   }, [session]);
-
-  const handleCirclePlusClick = () => {
-    setShowTodoForm(true); // Show the TodoFormTest drawer
-  };
-
-  const refreshTodos = async () => {
-    if (session) {
-      const res = await axios.get("/api/todos");
-      setGetTodo(res.data);
-    }
-  };
 
   if (session) {
     return (
@@ -50,13 +39,8 @@ const TodoList = () => {
             <Task data={item} key={item._id} />
           ))}
         </div>
-        <CirclePlus onClick={handleCirclePlusClick} />{" "}
-        {/* Attach the click handler */}
-        <TodoFormTest
-          show={showTodoForm}
-          onClose={() => setShowTodoForm(false)}
-          onFormSubmit={refreshTodos}
-        />{" "}
+        {/* Add task button */}
+        <AddTaskWrapper />
         {/* Pass props */}
         <div className="flex flex-col gap-1 py-4">
           {/* Completed task  */}

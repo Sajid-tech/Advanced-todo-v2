@@ -13,12 +13,12 @@ export const primaryNavItems = [
   },
   {
     name: "Upcoming",
-    link: "/loggedin",
+    link: "/loggedin/upcoming",
     icon: <CalendarDays className="w-4 h-4" />,
   },
   {
     name: "Filters & Labels",
-    link: "/loggedin",
+    link: "/loggedin/label",
     icon: <Grid2X2 className="w-4 h-4" />,
   },
 ];
