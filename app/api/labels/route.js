@@ -1,21 +1,12 @@
 //  get and post
 
 import mongooseConnect from "@/lib/mongoose";
-import Account from "@/models/Account";
 import Label from "@/models/Label";
 import { getAuthSession } from "@/utils/auth";
+import { getUserId } from "@/utils/userUtils";
 import { NextResponse } from "next/server";
 
 
-// Helper function to get user ID
-async function getUserId(email) {
-
-    const accounts = await Account.find({ email });
-    const userIds = accounts.map(account => account.userId);
-    // Assuming the user ID is stored as a string in the database
-    console.log("shaka", userIds.toString())
-    return userIds.toString()
-}
 
 export async function POST(req) {
 
@@ -33,7 +24,7 @@ export async function POST(req) {
 
         // to get userId 
         const userIds = await getUserId(session?.user?.email);
-        console.log("shaka laaka", userIds)
+        // console.log("shaka laaka", userIds)
 
         if (!userIds) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });

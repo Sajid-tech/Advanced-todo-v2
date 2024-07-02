@@ -9,7 +9,6 @@ export async function GET(req) {
 
     const session = await getAuthSession()
 
-    console.log("user session", session)
 
     if (!session) {
         return NextResponse({ error: "User session not found " }, { status: 401 })
@@ -19,7 +18,6 @@ export async function GET(req) {
     try {
 
         const users = await User.find()
-        console.log("users:", users)
         return NextResponse.json(users)
 
     } catch (error) {

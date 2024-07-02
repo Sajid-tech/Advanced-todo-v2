@@ -1,21 +1,12 @@
 //  Handle to GET the today todos
 
 import mongooseConnect from "@/lib/mongoose";
-import Account from "@/models/Account";
 import Todo from "@/models/Todo";
 import { getAuthSession } from "@/utils/auth";
+import { getUserId } from "@/utils/userUtils";
 import moment from "moment";
 import { NextResponse } from "next/server";
 
-// Helper function to get user ID
-async function getUserId(email) {
-
-    const accounts = await Account.find({ email });
-    const userIds = accounts.map(account => account.userId);
-    // Assuming the user ID is stored as a string in the database
-    console.log("shaka", userIds.toString())
-    return userIds.toString()
-}
 
 
 export async function GET(req) {
