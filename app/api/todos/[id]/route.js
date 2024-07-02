@@ -12,7 +12,7 @@ export async function PUT(req, { params }) {
     await mongooseConnect();
 
     const { taskId } = params;
-    const { taskName, description, priority, dueDate, isCompleted, labelId, projectId, embedding } = await req.json();
+    const { taskName, description, priority, dueDate, isCompleted, labelId, embedding } = await req.json();
 
     const updatedTodo = await Todo.findByIdAndUpdate(taskId, {
         taskName,

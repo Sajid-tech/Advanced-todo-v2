@@ -60,14 +60,14 @@ const TodoList = () => {
       <div className="flex flex-col gap-1 py-4">
         {/* Incomplete task */}
         {inCompleted.map((item) => (
-          <Task data={item} key={item._id} />
+          <Task data={item} key={item._id} onChecked={refreshTodos} />
         ))}
       </div>
       <AddTaskInline onTodoSubmit={refreshTodos} />
       <div className="flex flex-col gap-1 py-4">
         {/* Completed task  */}
         {completed.map((item) => (
-          <Task data={item} key={item._id} />
+          <Task data={item} key={item._id} onChecked={refreshTodos} />
         ))}
       </div>
       <CompletedTodos totalTodos={totalTodos} />

@@ -5,9 +5,24 @@ import { Dialog, DialogTrigger } from "../ui/dialog";
 import clsx from "clsx";
 import AddTaskDialog from "./AddTaskDialog";
 import moment from "moment";
+import axios from "axios";
 
-const Task = ({ data, isCompleted, handleOnChange, showDetails = false }) => {
-  const { taskName, dueDate } = data;
+const Task = ({ data, showDetails = false, onChecked }) => {
+  const { _id, taskName, dueDate, isCompleted } = data;
+
+  const handleOnChange = async (checked) => {
+    try {
+      if (checked) {
+        await axios.post(`api/todos/${_id}/check`);
+        onChecked();
+      } else {
+        await axios.post(`api/todos/${_id}/uncheck`);
+        onChecked();
+      }
+    } catch (error) {
+      console.error("Error updating todo:", error);
+    }
+  };
 
   return (
     <div
