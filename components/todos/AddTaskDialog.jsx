@@ -92,15 +92,29 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
   };
 
   // Delete function
+  // const handleDeleteTodo = async (e) => {
+  //   e.preventDefault();
+  //   if (session) {
+  //     try {
+  //       await axios.delete(`/api/todos/${_id}`);
+  //       await refreshTodos(); // Refresh the list of todos after deletion
+  //       router.refresh(); // Go back to the previous page or close the dialog
+  //     } catch (error) {
+  //       console.error("Error deleting todo:", error);
+  //     }
+  //   }
+  // };
+
   const handleDeleteTodo = async (e) => {
     e.preventDefault();
     if (session) {
       try {
-        await axios.delete(`/api/todos/${_id}`);
+        // Delete the todo and its subtodos
+        await axios.delete(`/api/todos/${_id}?deleteSubtodos=true`);
         await refreshTodos(); // Refresh the list of todos after deletion
         router.refresh(); // Go back to the previous page or close the dialog
       } catch (error) {
-        console.error("Error deleting todo:", error);
+        console.error("Error deleting todo and subtodos:", error);
       }
     }
   };

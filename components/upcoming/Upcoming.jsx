@@ -42,7 +42,7 @@ const Upcoming = () => {
     <>
       <div className="xl:px-40">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold md:text-2xl">Today</h1>
+          <h1 className="text-lg font-semibold md:text-2xl">Upcoming</h1>
         </div>
         <div className="flex flex-col gap-1 py-4">
           <p className="font-bold flex text-sm">Overdue</p>

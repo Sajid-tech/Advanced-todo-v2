@@ -1,4 +1,5 @@
 import mongooseConnect from "@/lib/mongoose";
+import SubTodo from "@/models/SubTodo";
 import Todo from "@/models/Todo";
 import { getAuthSession } from "@/utils/auth";
 import { NextResponse } from "next/server";
@@ -38,9 +39,20 @@ export async function DELETE(req, { params }) {
     await mongooseConnect();
 
     const { id: taskId } = params;
+    const { searchParams } = new URL(req.url);
+    const deleteSubtodos = searchParams.get('deleteSubtodos') === 'true';
 
     try {
-        const deletedTodo = await Todo.findByIdAndDelete({ _id: taskId });
+
+        // Check if there are any subtodos associated with the todo
+        const subtodos = await SubTodo.find({ parentId: taskId });
+
+        if (subtodos.length > 0 && deleteSubtodos) {
+            // Delete all subtodos
+            await SubTodo.deleteMany({ parentId: taskId });
+        }
+        // Delete the main todo regardless of subtodosCount
+        const deletedTodo = await Todo.findByIdAndDelete(taskId);
 
         if (!deletedTodo) {
             return NextResponse.json({ error: "Todo not found" }, { status: 404 });

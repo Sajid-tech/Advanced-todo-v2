@@ -53,6 +53,9 @@ export async function DELETE(req, { params }) {
     try {
         const deletedTodo = await SubTodo.findByIdAndDelete({ _id: taskId });
 
+
+
+
         if (!deletedTodo) {
             return NextResponse.json({ error: "Todo not found" }, { status: 404 });
         }
