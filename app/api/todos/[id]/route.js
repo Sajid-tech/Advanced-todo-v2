@@ -37,9 +37,19 @@ export async function DELETE(req, { params }) {
 
     await mongooseConnect();
 
-    const { taskId } = params;
+    const { id: taskId } = params;
 
-    await Todo.findByIdAndDelete(taskId);
+    try {
+        const deletedTodo = await Todo.findByIdAndDelete({ _id: taskId });
 
-    return NextResponse.json({ message: "Todo deleted" });
+        if (!deletedTodo) {
+            return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: "Todo deleted" });
+    } catch (error) {
+        return NextResponse.json({ error: "Failed to delete todo" }, { status: 500 });
+    }
+
+
 }

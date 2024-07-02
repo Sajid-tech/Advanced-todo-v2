@@ -91,6 +91,29 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
     }
   };
 
+  // Delete function
+  const handleDeleteTodo = async (e) => {
+    e.preventDefault();
+    if (session) {
+      try {
+        await axios.delete(`/api/todos/${_id}`);
+        await refreshTodos(); // Refresh the list of todos after deletion
+        router.refresh(); // Go back to the previous page or close the dialog
+      } catch (error) {
+        console.error("Error deleting todo:", error);
+      }
+    }
+  };
+
+  const handleDeleteSubtodo = async (subtodoId) => {
+    try {
+      await axios.delete(`/api/subtodos/${subtodoId}`);
+      await refreshSubTodos();
+    } catch (error) {
+      console.error("Error deleting subtask:", error);
+    }
+  };
+
   return (
     <DialogContent className="max-w-4xl lg:h-4/6 flex flex-col md:flex-row lg:justify-between text-right">
       <DialogHeader className="w-full">
@@ -108,15 +131,23 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
           </div>
           <div className="pl-4">
             {inCompletedSubtodo?.map((item) => (
-              <Task data={item} key={item._id} />
+              <div key={item._id} className="flex items-center">
+                <Task data={item} />
+                <button
+                  onClick={() => handleDeleteSubtodo(item._id)}
+                  className="ml-2"
+                >
+                  <Trash2 className="w-5 h-5 text-red-600" />
+                </button>
+              </div>
             ))}
 
             <div className="pb-4">
               <AddTaskInline parentId={_id} onSubTodoSumbit={refreshSubTodos} />
             </div>
-            {completedSubtodo?.map((item) => (
-              <Task data={item} key={item._id} />
-            ))}
+            {/* {completedSubtodo?.map((item) => (
+              
+            ))} */}
           </div>
         </DialogDescription>
       </DialogHeader>
@@ -134,7 +165,7 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
           </div>
         ))}
         <div className="flex gap-2 p-4 w-full justify-end">
-          <form onSubmit={(e) => handleDeleteTodo(e)}>
+          <form onSubmit={handleDeleteTodo}>
             <button type="submit">
               <Trash2 className="w-5 h-5" />
             </button>
