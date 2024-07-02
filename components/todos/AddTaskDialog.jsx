@@ -91,20 +91,6 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
     }
   };
 
-  // Delete function
-  // const handleDeleteTodo = async (e) => {
-  //   e.preventDefault();
-  //   if (session) {
-  //     try {
-  //       await axios.delete(`/api/todos/${_id}`);
-  //       await refreshTodos(); // Refresh the list of todos after deletion
-  //       router.refresh(); // Go back to the previous page or close the dialog
-  //     } catch (error) {
-  //       console.error("Error deleting todo:", error);
-  //     }
-  //   }
-  // };
-
   const handleDeleteTodo = async (e) => {
     e.preventDefault();
     if (session) {
@@ -145,7 +131,10 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
           </div>
           <div className="pl-4">
             {inCompletedSubtodo?.map((item) => (
-              <div key={item._id} className="flex items-center">
+              <div
+                key={item._id}
+                className="flex flex-row justify-between items-center"
+              >
                 <Task data={item} />
                 <button
                   onClick={() => handleDeleteSubtodo(item._id)}

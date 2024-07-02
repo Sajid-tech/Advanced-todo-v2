@@ -55,19 +55,32 @@ export async function GET(req) {
     }
 
     await mongooseConnect()
+    const url = new URL(req.url);
+    const labelId = url.searchParams.get('labelId');
+
+
+
 
     try {
         const userIds = await getUserId(session?.user?.email);
+
+        let query = { userId: userIds };
+
+        if (labelId) {
+            query.labelId = labelId;
+        }
+
 
         if (!userIds) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
 
-        const todos = await Todo.find({ userId: userIds }).populate('labelId')
+        const todos = await Todo.find(query).populate('labelId')
         return NextResponse.json(todos)
     } catch (error) {
         return NextResponse.json({ error: "Failed to fetch todos" }, { status: 500 });
     }
 }
+
 

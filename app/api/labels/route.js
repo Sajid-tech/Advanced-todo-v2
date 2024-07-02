@@ -1,12 +1,11 @@
 //  get and post
 
 import mongooseConnect from "@/lib/mongoose";
+import Account from "@/models/Account";
 import Label from "@/models/Label";
 import { getAuthSession } from "@/utils/auth";
 import { getUserId } from "@/utils/userUtils";
 import { NextResponse } from "next/server";
-
-
 
 export async function POST(req) {
 
@@ -69,3 +68,5 @@ export async function GET(req) {
         return NextResponse.json({ error: "Failed to fetch todos" }, { status: 500 });
     }
 }
+
+

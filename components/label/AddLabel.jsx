@@ -1,5 +1,5 @@
 "use client";
-import { CirclePlus, CirclePlusIcon, Loader, Plus } from "lucide-react";
+import { CirclePlus, CirclePlusIcon, Loader, Plus, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -82,6 +82,7 @@ const AddLabel = ({ onFormSubmit }) => {
           </DialogHeader>
         </DialogContent>
       </Dialog>
+      {/* Delete button */}
     </div>
   );
 };
