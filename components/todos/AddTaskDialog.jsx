@@ -5,6 +5,7 @@ import {
   ChevronDown,
   Flag,
   Hash,
+  Plus,
   TagIcon,
   Trash2,
 } from "lucide-react";
@@ -21,6 +22,7 @@ import { format } from "date-fns";
 import AddTaskInline from "../addTask/AddTaskInline";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 //  Subtodos
 const AddTaskDialog = ({ data, refreshTodos }) => {
@@ -35,12 +37,13 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
   const [todoDetails, setTodoDetails] = useState([]);
   const [completedSubtodo, setCompletedSubtodo] = useState([]);
   const [inCompletedSubtodo, setInCompletedSubtodo] = useState([]);
+  const [isAddingSubtask, setIsAddingSubtask] = useState(false);
 
   useEffect(() => {
     const data = [
       {
         labelName: "Project",
-        value: project?.name || "",
+        value: project?.name || "Made by Sajid Hussain",
         icon: <Hash className="w-4 h-4 text-primary capitalize" />,
       },
       {
@@ -72,7 +75,6 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
         const completedSubTodos = res.data.filter((todo) => todo.isCompleted);
         const incompleteSubTodos = res.data.filter((todo) => !todo.isCompleted);
         setCompletedSubtodo(completedSubTodos);
-        // setTotalTodos(completedTodos.length);
         setInCompletedSubtodo(incompleteSubTodos);
       } catch (error) {
         console.error("Error fetching labels:", error);
@@ -86,8 +88,8 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
       const completedSubTodos = res.data.filter((todo) => todo.isCompleted);
       const incompleteSubTodos = res.data.filter((todo) => !todo.isCompleted);
       setCompletedSubtodo(completedSubTodos);
-      // setTotalTodos(completedTodos.length);
       setInCompletedSubtodo(incompleteSubTodos);
+      setIsAddingSubtask(false);
     }
   };
 
@@ -115,64 +117,88 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
   };
 
   return (
-    <DialogContent className="max-w-4xl lg:h-4/6 flex flex-col md:flex-row lg:justify-between text-right">
-      <DialogHeader className="w-full">
-        <DialogTitle>{taskName}</DialogTitle>
-        <DialogDescription>
-          <p className="my-2 capitalize">{description}</p>
-          <div className="flex items-center gap-1 mt-12 border-b-2 border-gray-100 pb-2 flex-wrap sm:justify-between lg:gap-0 ">
-            <div className="flex gap-1">
-              <ChevronDown className="w-5 h-5 text-primary" />
-              <p className="font-bold flex text-sm text-gray-900">Sub-tasks</p>
-            </div>
-            <div>
-              <h4>Suggest missing task</h4>
-            </div>
-          </div>
-          <div className="pl-4">
-            {inCompletedSubtodo?.map((item) => (
-              <div
-                key={item._id}
-                className="flex flex-row justify-between items-center"
-              >
-                <Task data={item} />
-                <button
-                  onClick={() => handleDeleteSubtodo(item._id)}
-                  className="ml-2"
-                >
-                  <Trash2 className="w-5 h-5 text-red-600" />
-                </button>
+    <DialogContent className="max-w-4xl h-full md:h-4/5 flex flex-col md:flex-row overflow-hidden">
+      <div className="w-full md:w-3/5 p-4 overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold mb-2">
+            {taskName}
+          </DialogTitle>
+          <DialogDescription>
+            <p className="my-2 text-sm text-gray-600">{description}</p>
+            <div className="flex items-center justify-between mt-6 border-b-2 border-gray-100 pb-2">
+              <div className="flex items-center gap-1">
+                <ChevronDown className="w-5 h-5 text-primary" />
+                <p className="font-bold text-sm text-gray-900">Sub-tasks</p>
               </div>
-            ))}
-
-            <div className="pb-4">
-              <AddTaskInline parentId={_id} onSubTodoSumbit={refreshSubTodos} />
+              <button
+                onClick={() => setIsAddingSubtask(true)}
+                className="text-sm text-blue-600 hover:text-blue-800 transition-colors flex items-center"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add subtask
+              </button>
             </div>
-            {/* {completedSubtodo?.map((item) => (
-              
-            ))} */}
-          </div>
-        </DialogDescription>
-      </DialogHeader>
-      <div className="flex flex-col gap-2 bg-gray-100 lg:w-1/2">
+            <div className="mt-4 space-y-2">
+              <AnimatePresence>
+                {inCompletedSubtodo?.map((item) => (
+                  <motion.div
+                    key={item._id}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="flex justify-between items-center"
+                  >
+                    <Task data={item} />
+                    <button
+                      onClick={() => handleDeleteSubtodo(item._id)}
+                      className="ml-2 text-red-600 hover:text-red-800 transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              {isAddingSubtask && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  <AddTaskInline
+                    parentId={_id}
+                    onSubTodoSumbit={refreshSubTodos}
+                  />
+                </motion.div>
+              )}
+            </div>
+          </DialogDescription>
+        </DialogHeader>
+      </div>
+      <div className="w-full md:w-2/5 bg-gray-50 p-4 overflow-y-auto">
+        <h3 className="text-lg font-semibold mb-4">Task Details</h3>
         {todoDetails.map(({ labelName, value, icon }, idx) => (
-          <div
+          <motion.div
             key={`${value}-${idx}`}
-            className="grid gap-2 p-4 border-b-2 w-full"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className="mb-4 pb-2 border-b border-gray-200 last:border-b-0"
           >
-            <Label className="flex items-start">{labelName}</Label>
-            <div className="flex text-left items-center justify-start gap-2 pb-2">
+            <Label className="flex items-center mb-1 text-sm font-medium text-gray-600">
               {icon}
-              <p className="text-sm">{value}</p>
-            </div>
-          </div>
+              <span className="ml-2">{labelName}</span>
+            </Label>
+            <p className="text-sm pl-6 text-gray-800">{value}</p>
+          </motion.div>
         ))}
-        <div className="flex gap-2 p-4 w-full justify-end">
-          <form onSubmit={handleDeleteTodo}>
-            <button type="submit">
-              <Trash2 className="w-5 h-5" />
-            </button>
-          </form>
+        <div className="flex justify-end mt-6">
+          <button
+            onClick={handleDeleteTodo}
+            className="bg-red-100 text-red-600 hover:bg-red-200 px-3 py-2 rounded-md transition-colors flex items-center"
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete Task
+          </button>
         </div>
       </div>
     </DialogContent>
