@@ -8,7 +8,7 @@ import {
   TagIcon,
   Trash2,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Task from "./Task";
 import {
   DialogContent,
@@ -18,38 +18,23 @@ import {
 } from "../ui/dialog";
 import axios from "axios";
 import { format } from "date-fns";
+import AddTaskInline from "../addTask/AddTaskInline";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 //  Subtodos
-const AddTaskDialog = ({ data }) => {
+const AddTaskDialog = ({ data, refreshTodos }) => {
+  const { data: session } = useSession();
   const { taskName, description, projectId, labelId, priority, dueDate, _id } =
     data;
 
   const project = projectId;
   const label = labelId;
+  const router = useRouter();
 
   const [todoDetails, setTodoDetails] = useState([]);
-  const [completedSubtodosByProject, setCompletedSubtodosByProject] = useState(
-    []
-  );
-  const [inCompletedSubtodosByProject, setInCompletedSubtodosByProject] =
-    useState([]);
-
-  useEffect(() => {
-    const fetchSubtodos = async () => {
-      try {
-        const res = await axios.get(`/api/todos/completed`); // Adjust endpoint as per your API route
-        setCompletedSubtodosByProject(
-          res.data.filter((todo) => todo.isCompleted)
-        );
-        setInCompletedSubtodosByProject(
-          res.data.filter((todo) => !todo.isCompleted)
-        );
-      } catch (error) {
-        console.error("Error fetching subtodos:", error);
-      }
-    };
-    fetchSubtodos();
-  }, []);
+  const [completedSubtodo, setCompletedSubtodo] = useState([]);
+  const [inCompletedSubtodo, setInCompletedSubtodo] = useState([]);
 
   useEffect(() => {
     const data = [
@@ -77,7 +62,34 @@ const AddTaskDialog = ({ data }) => {
     if (data) {
       setTodoDetails(data);
     }
-  }, [dueDate, label?.name, priority, project]);
+  }, [dueDate, label, priority, project]);
+
+  useMemo(async () => {
+    if (session) {
+      try {
+        const res = await axios.get(`/api/subtodos/${_id}`);
+
+        const completedSubTodos = res.data.filter((todo) => todo.isCompleted);
+        const incompleteSubTodos = res.data.filter((todo) => !todo.isCompleted);
+        setCompletedSubtodo(completedSubTodos);
+        // setTotalTodos(completedTodos.length);
+        setInCompletedSubtodo(incompleteSubTodos);
+      } catch (error) {
+        console.error("Error fetching labels:", error);
+      }
+    }
+  }, [_id, session]);
+
+  const refreshSubTodos = async () => {
+    if (session) {
+      const res = await axios.get(`/api/subtodos/${_id}`);
+      const completedSubTodos = res.data.filter((todo) => todo.isCompleted);
+      const incompleteSubTodos = res.data.filter((todo) => !todo.isCompleted);
+      setCompletedSubtodo(completedSubTodos);
+      // setTotalTodos(completedTodos.length);
+      setInCompletedSubtodo(incompleteSubTodos);
+    }
+  };
 
   return (
     <DialogContent className="max-w-4xl lg:h-4/6 flex flex-col md:flex-row lg:justify-between text-right">
@@ -95,33 +107,16 @@ const AddTaskDialog = ({ data }) => {
             </div>
           </div>
           <div className="pl-4">
-            {inCompletedSubtodosByProject.map((task) => {
-              return (
-                <Task
-                  key={task._id}
-                  data={task}
-                  isCompleted={task.isCompleted}
-                  handleOnChange={() =>
-                    checkASubTodoMutation({ taskId: task._id })
-                  }
-                />
-              );
-            })}
+            {inCompletedSubtodo?.map((item) => (
+              <Task data={item} key={item._id} />
+            ))}
+
             <div className="pb-4">
-              <h1>Add task Wrapper</h1>
+              <AddTaskInline parentId={_id} onSubTodoSumbit={refreshSubTodos} />
             </div>
-            {completedSubtodosByProject.map((task) => {
-              return (
-                <Task
-                  key={task._id}
-                  data={task}
-                  isCompleted={task.isCompleted}
-                  handleOnChange={() =>
-                    unCheckASubTodoMutation({ taskId: task._id })
-                  }
-                />
-              );
-            })}
+            {completedSubtodo?.map((item) => (
+              <Task data={item} key={item._id} />
+            ))}
           </div>
         </DialogDescription>
       </DialogHeader>

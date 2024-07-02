@@ -18,11 +18,12 @@ const TodoList = () => {
       try {
         const res = await axios.get("/api/todos");
         setGetTodo(res.data);
-        setTotalTodos(res.data.length);
+        // setTotalTodos(res.data.length);
 
         const completedTodos = res.data.filter((todo) => todo.isCompleted);
         const incompleteTodos = res.data.filter((todo) => !todo.isCompleted);
         setCompleted(completedTodos);
+        setTotalTodos(completedTodos.length);
         setInCompleted(incompleteTodos);
       } catch (error) {
         console.error("Error fetching labels:", error);
@@ -41,11 +42,11 @@ const TodoList = () => {
     if (session) {
       const res = await axios.get("/api/todos");
       setGetTodo(res.data);
-      setTotalTodos(res.data.length);
 
       const completedTodos = res.data.filter((todo) => todo.isCompleted);
       const incompleteTodos = res.data.filter((todo) => !todo.isCompleted);
       setCompleted(completedTodos);
+      setTotalTodos(completedTodos.length);
       setInCompleted(incompleteTodos);
     }
   };

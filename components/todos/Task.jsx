@@ -69,7 +69,7 @@ const Task = ({ data, showDetails = false, onChecked }) => {
               </div>
             </DialogTrigger>
           </div>
-          {<AddTaskDialog data={data} />}
+          {<AddTaskDialog data={data} refreshTodos={onChecked} />}
         </div>
       </Dialog>
     </div>

@@ -31,13 +31,17 @@ import {
   DrawerTitle,
 } from "../ui/drawer";
 
-export default function AddTaskInline({ parentTask, onTodoSubmit }) {
+export default function AddTaskInline({
+  onTodoSubmit,
+  parentId,
+  onSubTodoSumbit,
+}) {
   const [formData, setFormData] = useState({
     taskName: "",
     description: "",
     dueDate: new Date(),
     priority: "1",
-    labelId: parentTask?.labelId || "defaultLabelId",
+    labelId: "defaultLabelId",
   });
   const [labels, setLabels] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -82,20 +86,27 @@ export default function AddTaskInline({ parentTask, onTodoSubmit }) {
     const taskData = {
       ...formData,
       dueDate: moment(formData.dueDate).valueOf(),
+      parentId: parentId || null,
     };
     setIsLoading(true);
     try {
-      await axios.post("/api/todos", taskData);
+      if (parentId) {
+        await axios.post("/api/subtodos", taskData);
+        await onSubTodoSumbit();
+      } else {
+        await axios.post("/api/todos", taskData);
 
-      setFormData({
-        taskName: "",
-        description: "",
-        dueDate: new Date(),
-        priority: "1",
-        labelId: parentTask?.labelId || "defaultLabelId",
-      });
-      await onTodoSubmit();
-      router.push("/loggedin");
+        setFormData({
+          taskName: "",
+          description: "",
+          dueDate: new Date(),
+          priority: "1",
+          labelId: "defaultLabelId",
+        });
+        await onTodoSubmit();
+      }
+
+      router.refresh();
       // Refresh the labels
       setIsLoading(false);
 

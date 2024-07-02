@@ -1,9 +1,8 @@
 import mongooseConnect from "@/lib/mongoose";
 import Account from "@/models/Account";
-import Todo from "@/models/Todo";
+import SubTodo from "@/models/SubTodo";
 import { getAuthSession } from "@/utils/auth";
 import { NextResponse } from "next/server";
-
 
 // Helper function to get user ID
 async function getUserId(email) {
@@ -15,7 +14,7 @@ async function getUserId(email) {
     return userIds.toString()
 }
 
-export async function POST(req) {
+export async function POST(req,) {
     const session = await getAuthSession();
     if (!session) {
         return NextResponse.json({ error: "User session not found" }, { status: 401 });
@@ -23,7 +22,7 @@ export async function POST(req) {
 
     await mongooseConnect();
 
-    const { taskName, description, priority, dueDate, projectId, labelId, embedding } = await req.json();
+    const { taskName, description, priority, dueDate, projectId, labelId, parentId, embedding } = await req.json();
 
     try {
 
@@ -36,7 +35,7 @@ export async function POST(req) {
         }
 
         // Create new Todo with userId as ObjectId
-        const newTodo = await Todo.create({
+        const newTodo = await SubTodo.create({
             userId: userIds,
             taskName,
             description,
@@ -45,6 +44,7 @@ export async function POST(req) {
             projectId: "project",
             labelId,
             isCompleted: false,
+            parentId,
             embedding
         });
 
@@ -54,29 +54,3 @@ export async function POST(req) {
         return NextResponse.json({ error: "Failed to create todo" }, { status: 500 });
     }
 }
-
-
-export async function GET(req) {
-    const session = await getAuthSession()
-
-    if (!session) {
-        return NextResponse.json({ error: "User session not found" }, { status: 401 });
-    }
-
-    await mongooseConnect()
-
-    try {
-        const userIds = await getUserId(session?.user?.email);
-
-        if (!userIds) {
-            return NextResponse.json({ error: "User not found" }, { status: 404 });
-        }
-
-
-        const todos = await Todo.find({ userId: userIds }).populate('labelId')
-        return NextResponse.json(todos)
-    } catch (error) {
-        return NextResponse.json({ error: "Failed to fetch todos" }, { status: 500 });
-    }
-}
-
