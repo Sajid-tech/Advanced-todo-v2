@@ -5,6 +5,7 @@ import {
   ChevronDown,
   Flag,
   Hash,
+  Loader,
   Plus,
   TagIcon,
   Trash2,
@@ -38,6 +39,8 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
   const [completedSubtodo, setCompletedSubtodo] = useState([]);
   const [inCompletedSubtodo, setInCompletedSubtodo] = useState([]);
   const [isAddingSubtask, setIsAddingSubtask] = useState(false);
+
+  const [isDeleting, setIsDeleting] = useState(false); // for loader
 
   useEffect(() => {
     const data = [
@@ -96,6 +99,7 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
   const handleDeleteTodo = async (e) => {
     e.preventDefault();
     if (session) {
+      setIsDeleting(true);
       try {
         // Delete the todo and its subtodos
         await axios.delete(`/api/todos/${_id}?deleteSubtodos=true`);
@@ -103,6 +107,8 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
         router.refresh(); // Go back to the previous page or close the dialog
       } catch (error) {
         console.error("Error deleting todo and subtodos:", error);
+      } finally {
+        setIsDeleting(false);
       }
     }
   };
@@ -192,13 +198,25 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
           </motion.div>
         ))}
         <div className="flex justify-end mt-6">
-          <button
+          <motion.button
             onClick={handleDeleteTodo}
             className="bg-red-100 text-red-600 hover:bg-red-200 px-3 py-2 rounded-md transition-colors flex items-center"
+            disabled={isDeleting}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Delete Task
-          </button>
+            {isDeleting ? (
+              <>
+                <Loader className="w-4 h-4 mr-2 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              <>
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Task
+              </>
+            )}
+          </motion.button>
         </div>
       </div>
     </DialogContent>
