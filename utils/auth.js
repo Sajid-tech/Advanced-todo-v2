@@ -61,6 +61,8 @@ export const authOptions = {
                     await newAccount.save();
                     console.log("New account saved for user:", user.id);
                 }
+
+
             } catch (error) {
                 console.error("Error in signIn event:", error);
             }

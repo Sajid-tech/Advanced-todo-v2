@@ -24,6 +24,8 @@ import {
 import UserProfile from "./UserProfile";
 import { primaryNavItems } from "@/utils";
 
+// sajid
+
 export default function Sidebar() {
   return (
     <div className="hidden border-r bg-muted/40 md:block">

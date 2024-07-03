@@ -1,3 +1,4 @@
+
 import mongooseConnect from "@/lib/mongoose";
 import Todo from "@/models/Todo";
 import { getAuthSession } from "@/utils/auth";
@@ -38,6 +39,10 @@ export async function POST(req) {
             isCompleted: false,
             embedding
         });
+
+
+
+
 
         return NextResponse.json({ message: "Todo created", todo: newTodo }, { status: 201 });
     } catch (error) {

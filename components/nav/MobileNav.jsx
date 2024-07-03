@@ -23,7 +23,7 @@ import UserProfile from "./UserProfile";
 import Link from "next/link";
 import { signOutAction } from "@/actions/auth-action";
 import { useSession } from "next-auth/react";
-
+//sajid
 const MobileNav = () => {
   const { data: session } = useSession();
   return (

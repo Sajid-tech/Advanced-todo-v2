@@ -12,7 +12,7 @@ import { Button } from "../ui/button";
 const UserProfile = () => {
   const { data: session } = useSession();
 
-  console.log("user profile session", session);
+  // console.log("user profile session", session);
 
   const imageUrl = session?.user?.image;
   const name = session?.user?.name;
