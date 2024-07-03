@@ -148,7 +148,7 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
                     exit={{ opacity: 0, y: -10 }}
                     className="flex justify-between items-center"
                   >
-                    <Task data={item} />
+                    <Task data={item} disableDialogTrigger={true} />
                     <button
                       onClick={() => handleDeleteSubtodo(item._id)}
                       className="ml-2 text-red-600 hover:text-red-800 transition-colors"

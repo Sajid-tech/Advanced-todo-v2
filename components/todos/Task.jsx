@@ -10,7 +10,14 @@ import AddTaskDialog from "./AddTaskDialog";
 import moment from "moment";
 import axios from "axios";
 
-const Task = ({ data, showDetails = false, onChecked }) => {
+// sajid hussain
+
+const Task = ({
+  data,
+  showDetails = false,
+  onChecked,
+  disableDialogTrigger = false,
+}) => {
   const { _id, taskName, dueDate, isCompleted } = data;
 
   const handleOnChange = async (checked) => {
@@ -55,7 +62,44 @@ const Task = ({ data, showDetails = false, onChecked }) => {
                 onCheckedChange={handleOnChange}
               />
             </motion.div>
-            <DialogTrigger asChild>
+            {!disableDialogTrigger ? (
+              <DialogTrigger asChild>
+                <motion.div
+                  className="flex flex-col items-start"
+                  initial={{ x: -10, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.1, duration: 0.2 }}
+                >
+                  <button
+                    className={clsx(
+                      "text-sm font-normal text-left",
+                      isCompleted && "line-through text-foreground/30"
+                    )}
+                  >
+                    {taskName}
+                  </button>
+                  {showDetails && (
+                    <motion.div
+                      className="flex gap-2"
+                      initial={{ y: -10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.2 }}
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        <GitBranch className="w-3 h-3 text-foreground/70" />
+                        <p className="text-xs text-foreground/70"></p>
+                      </div>
+                      <div className="flex items-center justify-center gap-1">
+                        <Calendar className="w-3 h-3 text-primary" />
+                        <p className="text-xs text-primary">
+                          {moment(dueDate).format("LL")}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              </DialogTrigger>
+            ) : (
               <motion.div
                 className="flex flex-col items-start"
                 initial={{ x: -10, opacity: 0 }}
@@ -90,9 +134,11 @@ const Task = ({ data, showDetails = false, onChecked }) => {
                   </motion.div>
                 )}
               </motion.div>
-            </DialogTrigger>
+            )}
           </div>
-          {<AddTaskDialog data={data} refreshTodos={onChecked} />}
+          {!disableDialogTrigger && (
+            <AddTaskDialog data={data} refreshTodos={onChecked} />
+          )}
         </div>
       </Dialog>
     </motion.div>

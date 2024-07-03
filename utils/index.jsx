@@ -1,4 +1,10 @@
-import { Calendar, CalendarDays, Grid2X2, Inbox } from "lucide-react";
+import {
+  Calendar,
+  CalendarDays,
+  Grid2X2,
+  Inbox,
+  Waypoints,
+} from "lucide-react";
 
 export const primaryNavItems = [
   {
@@ -20,5 +26,10 @@ export const primaryNavItems = [
     name: "Filters & Labels",
     link: "/loggedin/label",
     icon: <Grid2X2 className="w-4 h-4" />,
+  },
+  {
+    name: "Sharing",
+    link: "/loggedin/",
+    icon: <Waypoints className="w-4 h-4" />,
   },
 ];
