@@ -24,11 +24,28 @@ import UserProfile from "./UserProfile";
 import Link from "next/link";
 import { signOutAction } from "@/actions/auth-action";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const MobileNav = () => {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const containerVariants = {
     hidden: { x: "-100%", opacity: 0 },
@@ -53,7 +70,11 @@ const MobileNav = () => {
 
   return (
     <>
-      <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+      <header
+        className={`flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 sticky top-0 z-50 transition-all ${
+          isScrolled ? "bg-white shadow-md" : ""
+        }`}
+      >
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button

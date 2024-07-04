@@ -29,7 +29,7 @@ export const primaryNavItems = [
   },
   {
     name: "Sharing",
-    link: "/loggedin/",
+    link: "/loggedin/sharing",
     icon: <Waypoints className="w-4 h-4" />,
   },
 ];

@@ -1,17 +1,4 @@
 import Link from "next/link";
-import {
-  Bell,
-  Calendar,
-  CalendarDays,
-  Grid2X2,
-  Home,
-  Inbox,
-  LineChart,
-  Package,
-  Package2,
-  ShoppingCart,
-  Users,
-} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +16,7 @@ import { primaryNavItems } from "@/utils";
 export default function Sidebar() {
   return (
     <div className="hidden border-r bg-muted/40 md:block">
-      <div className="flex h-full max-h-screen flex-col gap-2">
+      <div className="flex h-full max-h-screen flex-col gap-2 sticky top-0">
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
           <UserProfile />
         </div>

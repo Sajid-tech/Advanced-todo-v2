@@ -1,7 +1,6 @@
 //  get and post
 
 import mongooseConnect from "@/lib/mongoose";
-import Account from "@/models/Account";
 import Label from "@/models/Label";
 import { getAuthSession } from "@/utils/auth";
 import { getUserId } from "@/utils/userUtils";
@@ -21,7 +20,7 @@ export async function POST(req) {
 
     try {
 
-        // to get userId 
+        // to get userId of current user 
         const userIds = await getUserId(session?.user?.email);
         // console.log("shaka laaka", userIds)
 

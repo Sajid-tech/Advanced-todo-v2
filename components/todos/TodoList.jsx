@@ -31,13 +31,6 @@ const TodoList = () => {
     }
   }, [session]);
 
-  // useMemo(async () => {
-  //
-  //     const response = await axios.get("/api/labels");
-  //     setLabels(response.data);
-  //
-  // }, []);
-
   const refreshTodos = async () => {
     if (session) {
       const res = await axios.get("/api/todos");
