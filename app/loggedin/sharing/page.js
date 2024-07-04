@@ -28,18 +28,18 @@ const Sharing = () => {
         }
     }, [session])
 
-    // const handleDeleteLabel = async (labelId) => {
-    //     try {
-    //         await axios.delete(`/api/labels/${labelId}`);
-    //         refreshLabels()
-    //     } catch (error) {
-    //         console.error("Error deleting label:", error);
-    //     }
-    // };
+    const handleDeleteShareLabel = async (shareId) => {
+        try {
+            await axios.delete(`/api/shareLabels/${shareId}`);
+            refreshShareLabels()
+        } catch (error) {
+            console.error("Error deleting label:", error);
+        }
+    };
 
 
 
-    const refreshLabels = async () => {
+    const refreshShareLabels = async () => {
         if (session) {
             const res = await axios.get("/api/shareLabels");
             setGetData(res.data);
@@ -72,13 +72,13 @@ const Sharing = () => {
                                     </div>
                                     <button
                                         className="ml-auto"
-                                        onClick={() => handleDeleteLabel(item._id)}>
+                                        onClick={() => handleDeleteShareLabel(item._id)}>
                                         <Trash2 className="w-4 h-4 text-red-600" />
                                     </button>
 
                                 </div>
                             ))}
-                            <AddProject />
+                            <AddProject onFormSubmit={refreshShareLabels} />
                         </div>
                     </div>
                 </main>

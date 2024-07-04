@@ -35,6 +35,7 @@ const AddProject = ({ onFormSubmit }) => {
     setIsLoading(true);
     try {
       const response = await axios.post("/api/shareLabels", data);
+      await onFormSubmit();
       console.log("Share label created:", response.data);
       router.push("/loggedin/sharing");
       setIsLoading(false);
