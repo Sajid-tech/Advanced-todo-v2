@@ -5,7 +5,7 @@ import Sidebar from '@/components/nav/Sidebar';
 import AddShareProject from '@/components/sharing/AddShareProject';
 import ShareTaskDisplay from '@/components/sharing/ShareTaskDisplay';
 import axios from 'axios';
-import { ArrowLeftToLine, Briefcase, Users } from 'lucide-react';
+import { ArrowLeftToLine, Briefcase, Trash2, Users } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -48,6 +48,17 @@ const SharedProject = () => {
         if (session) {
             const responseTasks = await axios.get(`/api/shareProjects/${shareId}`);
             setShareTask(responseTasks.data);
+        }
+    };
+
+    const handleDeleteTask = async (taskId) => {
+        try {
+            await axios.delete(`/api/shareProjects/${taskId}`);
+            // Remove the deleted task from the state
+            setShareTask(prevTasks => prevTasks.filter(task => task._id !== taskId));
+        } catch (error) {
+            console.error("Error deleting task:", error);
+            // Handle error (e.g., show an error message to the user)
         }
     };
 
@@ -143,7 +154,8 @@ const SharedProject = () => {
                                     variants={itemVariants}
                                 >
                                     <h3 className="text-xl font-semibold text-gray-900">Tasks</h3>
-                                    <ShareTaskDisplay task={shareTask} />
+                                    <ShareTaskDisplay task={shareTask} onDeleteTask={handleDeleteTask} />
+
                                 </motion.div>
                                 <motion.div
                                     className="pt-6 border-t"

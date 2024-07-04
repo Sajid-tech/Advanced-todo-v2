@@ -6,9 +6,10 @@ import {
   MessageSquare,
   FileText,
   ChevronDown,
+  Trash2,
 } from "lucide-react";
 
-const ShareTaskDisplay = ({ task }) => {
+const ShareTaskDisplay = ({ task, onDeleteTask }) => {
   const [expandedTask, setExpandedTask] = useState(null);
 
   const containerVariants = {
@@ -52,12 +53,25 @@ const ShareTaskDisplay = ({ task }) => {
             <h2 className="text-lg font-medium text-gray-800 truncate">
               {item.taskTitle}
             </h2>
-            <motion.div
-              animate={{ rotate: expandedTask === item._id ? 180 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <ChevronDown className="w-4 h-4 text-gray-600" />
-            </motion.div>
+            <div className="flex items-center">
+              <motion.button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteTask(item._id);
+                }}
+                className="mr-2 p-1 rounded-full hover:bg-red-100 transition-colors duration-200"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Trash2 className="w-4 h-4 text-red-500" />
+              </motion.button>
+              <motion.div
+                animate={{ rotate: expandedTask === item._id ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ChevronDown className="w-4 h-4 text-gray-600" />
+              </motion.div>
+            </div>
           </div>
 
           <AnimatePresence>
