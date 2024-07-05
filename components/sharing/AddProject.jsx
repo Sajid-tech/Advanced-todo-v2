@@ -1,4 +1,5 @@
 "use client";
+
 import { Plus, Loader } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -17,8 +18,8 @@ import { useSession } from "next-auth/react";
 const AddProject = ({ onFormSubmit }) => {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false); // State for dialog open/close
-  const [name, setName] = useState(""); // State for input value
+  const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState("");
 
   const [users, setUsers] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -27,10 +28,10 @@ const AddProject = ({ onFormSubmit }) => {
   const router = useRouter();
 
   const onSubmit = async (event) => {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault();
     const data = {
       projectName: name,
-      selectUser: [...selectedItems, session.user.name], // Add current user's name to selected items
+      selectUser: [...selectedItems, session.user.name],
     };
     setIsLoading(true);
     try {
@@ -39,13 +40,12 @@ const AddProject = ({ onFormSubmit }) => {
       console.log("Share label created:", response.data);
       router.push("/loggedin/sharing");
       setIsLoading(false);
-      setIsOpen(false); // Close the dialog
+      setIsOpen(false);
     } catch (error) {
       setIsLoading(false);
     }
   };
 
-  // Fetch users for the form
   useEffect(() => {
     const fetchData = async () => {
       const res = await axios.get("/api/users");
@@ -90,37 +90,35 @@ const AddProject = ({ onFormSubmit }) => {
       </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-xl lg:h-56 flex flex-col md:flex-row lg:justify-between text-right">
+        <DialogContent className="max-w-lg w-full lg:w-96 flex flex-col lg:flex-row justify-between text-right p-4">
           <DialogHeader className="w-full">
-            <DialogTitle>Add a Project</DialogTitle>
-            <DialogDescription className="capitalize">
-              <form
-                onSubmit={onSubmit}
-                className="space-y-2 border-2 p-6 border-gray-200 my-2 rounded-sm border-foreground/20"
-              >
+            <DialogTitle className="text-lg font-semibold">
+              Add a Project
+            </DialogTitle>
+            <DialogDescription className="mt-2">
+              <form onSubmit={onSubmit} className="space-y-4">
                 <div>
                   <Input
                     id="name"
                     type="text"
                     placeholder="Project name"
                     required
-                    className="border-0 font-semibold text-lg"
-                    value={name} // Use value for input
-                    onChange={(e) => setName(e.target.value)} // Update state on change
+                    className="border-0 font-semibold text-lg w-full"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                   />
                 </div>
 
-                {/* for select user category  */}
-                <div className=" mx-auto my-4">
-                  <div className="mt-8 mx-auto max-w-screen-lg">
-                    <label
-                      htmlFor="example1"
-                      className="mb-1 block text-lg font-medium text-gray-700 py-1"
-                    >
-                      Select Users
-                    </label>
+                <div>
+                  <label
+                    htmlFor="example1"
+                    className="mb-1 block text-sm font-medium text-gray-700"
+                  >
+                    Select Users
+                  </label>
+                  <div className="flex gap-2">
                     <select
-                      className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-3"
+                      className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-400 focus:ring focus:ring-primary-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 p-2"
                       value={selectedItemToAdd}
                       onChange={handleSelectChange}
                     >
@@ -134,44 +132,48 @@ const AddProject = ({ onFormSubmit }) => {
                           )
                       )}
                     </select>
-                    {selectedItemToAdd && (
-                      <button
-                        className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={handleAddItemClick}
-                      >
-                        Add
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="mt-4 mx-auto max-w-screen-lg">
-                    <h2 className="text-lg font-semibold">Selected Items:</h2>
-                    <ul>
-                      {selectedItems.map((itemName) => (
-                        <li
-                          key={itemName}
-                          className="flex items-center justify-between mb-1"
-                        >
-                          <span>{itemName}</span>
-                          <button
-                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                            onClick={() => handleRemoveItemClick(itemName)}
-                          >
-                            Remove
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                    <button
+                      type="button"
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                      onClick={handleAddItemClick}
+                    >
+                      Add
+                    </button>
                   </div>
                 </div>
 
-                <Button disabled={isLoading}>
+                <div className="mt-4">
+                  <h2 className="text-sm font-medium">Selected Users:</h2>
+                  <ul>
+                    {selectedItems.map((itemName) => (
+                      <li
+                        key={itemName}
+                        className="flex items-center justify-between mb-1"
+                      >
+                        <span>{itemName}</span>
+                        <button
+                          type="button"
+                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                          onClick={() => handleRemoveItemClick(itemName)}
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-2 mt-4 bg-primary text-white rounded-lg"
+                >
                   {isLoading ? (
-                    <div className="flex gap-2">
+                    <div className="flex items-center justify-center">
                       <Loader className="h-5 w-5 text-primary animate-spin" />
                     </div>
                   ) : (
-                    "Add"
+                    "Add Project"
                   )}
                 </Button>
               </form>
