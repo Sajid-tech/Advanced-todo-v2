@@ -61,7 +61,7 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
       },
       {
         labelName: "Label",
-        value: label?.name || "",
+        value: label?.name || "Todo",
         icon: <TagIcon className="w-4 h-4 text-primary capitalize" />,
       },
     ];
