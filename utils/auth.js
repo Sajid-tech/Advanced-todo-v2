@@ -33,9 +33,14 @@ export const authOptions = {
                     userId: user.id,
                     provider: account.provider,
                     providerAccountId: account.providerAccountId,
-                });
-
-                if (existingAccount) {
+                }); if (existingAccount) {
+                    console.log("Account already exists for user:", user.id);
+                    if (!existingAccount.email) {
+                        existingAccount.email = user.email;
+                        await existingAccount.save();
+                        console.log("Updated existing account with email for user:", user.id);
+                    }
+                } else {
                     console.log("Creating new account for user:", user.id);
                     // Create new account entry
                     const newAccount = new Account({
