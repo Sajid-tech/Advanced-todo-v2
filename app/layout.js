@@ -2,6 +2,7 @@ import { Inter, Noto_Sans_Georgian } from "next/font/google";
 import "./globals.css";
 
 
+
 const inter = Inter({ subsets: ["latin"] });
 const defaultFont = Noto_Sans_Georgian({ subsets: ["latin"] });
 export const metadata = {
