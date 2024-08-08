@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'; // Import mongoose
 import clientPromise from "@/lib/mongodb";
 import mongooseConnect from "@/lib/mongoose";
 import Account from "@/models/Account";
@@ -15,35 +16,33 @@ export const authOptions = {
     secret: process.env.NEXTAUTH_SECRET,
     adapter: MongoDBAdapter(clientPromise),
     events: {
-        async signIn(message) {
-            const { user, account } = message;
-
+        async signIn({ user, account }) {
             try {
-                // Ensure database connection
-                console.log("Connecting to MongoDB...");
-                await mongooseConnect();
-                console.log("Connected to MongoDB");
+                // Ensure database connection only if necessary
+                if (mongoose.connection.readyState !== 1) {
+                    console.log("Connecting to MongoDB...");
+                    await mongooseConnect();
+                    console.log("Connected to MongoDB");
+                }
 
-                // Log the user and account information
-                console.log("User:", user);
-                console.log("Account:", account);
+                // Try finding the account with lean to avoid creating Mongoose documents
+                const existingAccount = await Account.findOne(
+                    { userId: user.id, provider: account.provider, providerAccountId: account.providerAccountId },
+                    '_id email'  // Only retrieve _id and email fields
+                ).lean();
 
-                // Check if account already exists
-                const existingAccount = await Account.findOne({
-                    userId: user.id,
-                    provider: account.provider,
-                    providerAccountId: account.providerAccountId,
-                }); if (existingAccount) {
-                    console.log("Account already exists for user:", user.id);
+                if (existingAccount) {
+                    // Update email if necessary using updateOne for better performance
                     if (!existingAccount.email) {
-                        existingAccount.email = user.email;
-                        await existingAccount.save();
+                        await Account.updateOne(
+                            { _id: existingAccount._id },
+                            { $set: { email: user.email } }
+                        );
                         console.log("Updated existing account with email for user:", user.id);
                     }
                 } else {
-                    console.log("Creating new account for user:", user.id);
-                    // Create new account entry
-                    const newAccount = new Account({
+                    // Directly create the new account
+                    await Account.create({
                         userId: user.id,
                         type: account.type,
                         provider: account.provider,
@@ -55,13 +54,10 @@ export const authOptions = {
                         id_token: account.id_token,
                         email: user.email,
                     });
-                    await newAccount.save();
-                    console.log("New account saved for user:", user.id);
+                    console.log("New account created for user:", user.id);
                 }
-
-
             } catch (error) {
-                console.error("Error in signIn event:", error);
+                console.error("Error during sign-in:", error);
             }
         },
     },
