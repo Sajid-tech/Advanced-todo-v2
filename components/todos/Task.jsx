@@ -145,4 +145,4 @@ const Task = ({
   );
 };
 
-export default Task;
+export default React.memo(Task);

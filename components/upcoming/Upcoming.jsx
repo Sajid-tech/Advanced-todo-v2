@@ -5,7 +5,7 @@ import Task from "../todos/Task";
 import moment from "moment";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 const Upcoming = () => {
   const { data: session } = useSession();
@@ -61,4 +61,4 @@ const Upcoming = () => {
   );
 };
 
-export default Upcoming;
+export default React.memo(Upcoming);

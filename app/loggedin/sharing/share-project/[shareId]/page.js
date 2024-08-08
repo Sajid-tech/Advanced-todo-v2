@@ -173,4 +173,4 @@ const SharedProject = () => {
     );
 };
 
-export default SharedProject;
+export default React.memo(SharedProject);

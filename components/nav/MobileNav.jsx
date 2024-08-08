@@ -24,7 +24,7 @@ import UserProfile from "./UserProfile";
 import Link from "next/link";
 import { signOutAction } from "@/actions/auth-action";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const MobileNav = () => {
   const { data: session } = useSession();
@@ -116,20 +116,15 @@ const MobileNav = () => {
                       </motion.div>
                     ))}
                   </motion.nav>
-                  <motion.div variants={itemVariants} className="mt-auto">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Upgrade to Pro</CardTitle>
+                  <motion.div variants={itemVariants} className="mt-auto p-2">
+                    <Card x-chunk="dashboard-02-chunk-0">
+                      <CardHeader className="p-2 pt-0 md:p-4">
+                        <CardTitle>About</CardTitle>
                         <CardDescription>
-                          Unlock all features and get unlimited access to our
-                          support team.
+                          Todovex is a robust task management application
+                          designed to streamline your productivity workflow.
                         </CardDescription>
                       </CardHeader>
-                      <CardContent>
-                        <Button size="sm" className="w-full">
-                          Upgrade
-                        </Button>
-                      </CardContent>
                     </Card>
                   </motion.div>
                 </motion.div>
@@ -143,7 +138,7 @@ const MobileNav = () => {
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search products..."
+                placeholder="Check filter page..."
                 className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
               />
             </div>
@@ -177,4 +172,4 @@ const MobileNav = () => {
   );
 };
 
-export default MobileNav;
+export default React.memo(MobileNav);

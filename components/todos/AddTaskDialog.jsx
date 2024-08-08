@@ -223,4 +223,4 @@ const AddTaskDialog = ({ data, refreshTodos }) => {
   );
 };
 
-export default AddTaskDialog;
+export default React.memo(AddTaskDialog);

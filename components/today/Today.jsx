@@ -5,7 +5,7 @@ import Task from "../todos/Task";
 import moment from "moment";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 const Today = () => {
   const { data: session } = useSession();
@@ -69,4 +69,4 @@ const Today = () => {
   );
 };
 
-export default Today;
+export default React.memo(Today);

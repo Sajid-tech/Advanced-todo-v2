@@ -87,4 +87,4 @@ const AddLabel = ({ onFormSubmit }) => {
   );
 };
 
-export default AddLabel;
+export default React.memo(AddLabel);

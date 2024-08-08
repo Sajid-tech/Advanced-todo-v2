@@ -88,4 +88,4 @@ const Label = () => {
     );
 }
 
-export default Label
+export default React.memo(Label)

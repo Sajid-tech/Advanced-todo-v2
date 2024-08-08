@@ -185,4 +185,4 @@ const AddProject = ({ onFormSubmit }) => {
   );
 };
 
-export default AddProject;
+export default React.memo(AddProject);

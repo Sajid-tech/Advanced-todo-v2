@@ -13,4 +13,4 @@ const CompletedTodos = ({ totalTodos = 0 }) => {
   );
 };
 
-export default CompletedTodos;
+export default React.memo(CompletedTodos);

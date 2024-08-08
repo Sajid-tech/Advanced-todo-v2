@@ -38,4 +38,4 @@ const FilterLabel = () => {
     );
 }
 
-export default FilterLabel
+export default React.memo(FilterLabel)

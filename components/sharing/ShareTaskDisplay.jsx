@@ -154,4 +154,4 @@ const ShareTaskDisplay = ({ task, onDeleteTask }) => {
   );
 };
 
-export default ShareTaskDisplay;
+export default React.memo(ShareTaskDisplay);

@@ -31,11 +31,7 @@ import {
 } from "@/components/ui/drawer";
 import { motion } from "framer-motion";
 
-export default function AddShareProject({
-  parentShareId,
-  users,
-  onShareTaskAdded,
-}) {
+const AddShareProject = ({ parentShareId, users, onShareTaskAdded }) => {
   const [formData, setFormData] = useState({
     taskTitle: "",
     description: "",
@@ -267,4 +263,6 @@ export default function AddShareProject({
       </Drawer>
     </>
   );
-}
+};
+
+export default React.memo(AddShareProject);

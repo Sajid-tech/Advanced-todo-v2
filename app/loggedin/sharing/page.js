@@ -88,4 +88,4 @@ const Sharing = () => {
     );
 }
 
-export default Sharing
+export default React.memo(Sharing)

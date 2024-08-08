@@ -10,10 +10,11 @@ import {
 } from "@/components/ui/card";
 import UserProfile from "./UserProfile";
 import { primaryNavItems } from "@/utils";
+import React from "react";
 
 // sajid
 
-export default function Sidebar() {
+const Sidebar = () => {
   return (
     <div className="hidden border-r bg-muted/40 md:block">
       <div className="flex h-full max-h-screen flex-col gap-2 sticky top-0">
@@ -37,20 +38,17 @@ export default function Sidebar() {
         <div className="mt-auto p-4">
           <Card x-chunk="dashboard-02-chunk-0">
             <CardHeader className="p-2 pt-0 md:p-4">
-              <CardTitle>Upgrade to Pro</CardTitle>
+              <CardTitle>About</CardTitle>
               <CardDescription>
-                Unlock all features and get unlimited access to our support
-                team.
+                Todovex is a robust task management application designed to
+                streamline your productivity workflow.
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
-              <Button size="sm" className="w-full">
-                Upgrade
-              </Button>
-            </CardContent>
           </Card>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default React.memo(Sidebar);

@@ -55,4 +55,4 @@ const AddFilterLabel = () => {
   );
 };
 
-export default AddFilterLabel;
+export default React.memo(AddFilterLabel);
